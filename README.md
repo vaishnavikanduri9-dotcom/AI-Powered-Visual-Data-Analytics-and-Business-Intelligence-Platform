@@ -18,7 +18,7 @@ A simple, complete version of the project (Milestones 1 → 4), with one file pe
 | `report.py` | 4 | PDF compliance report with an AI summary |
 | `app.py` | 4 | Streamlit dashboard (run this) |
 | `tests/test_project.py` | 4 | 6 quick tests |
-| `best.pt` | – | Your trained PPE model |
+| `best.pt` | – | Trained YOLOv8 PPE detection model |
 | `data/` | – | Safety manuals (a sample manual is included) |
 
 ## 🔄 How it works
@@ -35,27 +35,30 @@ Manual PDF ──► documents.py ──► knowledge_base.py ──────
 
 ```bash
 python -m venv venv
-source venv/bin/activate          # Windows: venv\Scripts\activate
+venv\Scripts\activate          
 pip install -r requirements.txt
-
-cp .env.example .env              # then paste your GEMINI_API_KEY into .env
+cp .env.example .env              
 streamlit run app.py
+Add Gemini API key to the .env file.
 ```
 
 ## 🧪 Check it works
 
 ```bash
-pytest -q                # 6 tests
-python evaluate.py       # retrieval accuracy
-python vision.py photo.jpg
-python agent.py
+## Check It Works
+
+Run the following commands from the project folder:
+
+### Start the Streamlit application
+```bash
+streamlit run app.py
 ```
 
 ## ☁️ Deploy (Streamlit Community Cloud, free)
 
 1. Push the folder to GitHub. `.gitignore` already keeps `.env` out.
 2. Go to share.streamlit.io → Create app → choose `app.py`.
-3. Under Settings → Secrets, add `GEMINI_API_KEY = "your_key"`.
+3. Under Settings → Secrets, add `GEMINI_API_KEY = "Gemini_API_key"`.
 4. Click Deploy. `packages.txt` installs the system library OpenCV needs.
 
 ## ✅ PDF evaluation checklist
@@ -68,11 +71,16 @@ python agent.py
 | M4: Dashboard, reports, end-to-end flow | 📊 Dashboard, 📋 Report |
 | M4: User satisfaction ≥ 85% | 👍/👎 on Ask AI → Dashboard |
 
-## ❓ Common problems
 
-| Problem | Fix |
-|---|---|
-| `best.pt not found` | Put `best.pt` in this folder |
-| `GEMINI_API_KEY not set` | Add it to `.env` |
-| `libGL.so.1` error on Linux | `sudo apt install libgl1` |
-| Wrong labels on boxes | Labels come from `best.pt` itself; violations are names starting with `no_` |
+## Troubleshooting
+
+### GEMINI_API_KEY not set
+Make sure the `.env` file exists and contains your Gemini API key.
+
+### best.pt not found
+Make sure the trained `best.pt` model is present in the project root.
+
+### Dependencies not installed
+Run:
+
+pip install -r requirements.txt
