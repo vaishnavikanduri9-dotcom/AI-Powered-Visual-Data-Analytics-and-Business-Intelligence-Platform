@@ -7,3 +7,4 @@ __pycache__/
 venv/
 output.jpg
 yolov8n.pt
+.venv/

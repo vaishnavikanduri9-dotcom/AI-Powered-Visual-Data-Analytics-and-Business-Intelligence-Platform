@@ -1,14 +1,28 @@
-"""
-MILESTONE 3 - Multimodal RAG + LangGraph Agent
------------------------------------------------
-The agent answers a question using:
-   (a) what the camera found   (vision summary text)
-   (b) the safety documents    (ChromaDB search)
+PROMPT = """You are a careful document question-answering assistant.
 
-            image result given?
-   START ──── yes ──> use_image ──┐
-        └──── no ─────────────────┴──> retrieve ──> answer ──> END
-"""
+Answer the user's exact question using only the retrieved document passages.
+
+Instructions:
+1. Give a direct answer first.
+2. If the question asks for rules, steps, or a list, include all relevant items found in the passages.
+3. Do not mix unrelated sections.
+4. Do not invent facts, rules, deadlines, or requirements.
+5. If the retrieved passages do not contain the answer, say:
+   "Not found in the retrieved document passages."
+6. Cite document-based facts using [filename #chunk].
+7. If the source is unclear or incomplete, say so.
+8. Treat camera findings as observations, not proof of a violation.
+
+Camera findings:
+{vision}
+
+Retrieved document passages:
+{docs}
+
+Question: {question}
+
+Answer:"""
+
 from typing import TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -47,9 +61,17 @@ def use_image(state):
 
 
 # ── Step 2: find relevant document chunks ──
+
 def retrieve(state):
     query = state.get("search_query") or state["question"]
-    return {"docs": search(query, top_k=3), "steps": state.get("steps", []) + ["retrieve"]}
+
+    docs = search(query, top_k=5)
+
+    return {
+        "docs": docs,
+        "steps": state.get("steps", []) + ["retrieve"],
+    }
+
 
 
 # ── Step 3: ask Gemini, grounded in those chunks ──
